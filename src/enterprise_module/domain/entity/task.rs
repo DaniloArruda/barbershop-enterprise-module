@@ -1,5 +1,4 @@
-use std::time::Duration;
-
+use chrono::Duration;
 use uuid::Uuid;
 
 use crate::domain::error::DomainError;
@@ -50,7 +49,7 @@ mod tests {
             Uuid::new_v4(),
             "description".to_string(),
             price,
-            Duration::from_secs(60),
+            Duration::minutes(60),
         );
 
         // then
@@ -65,7 +64,7 @@ mod tests {
         let description = "".to_string();
 
         // when
-        let result = Task::new(Uuid::new_v4(), description, 15.0, Duration::from_secs(60));
+        let result = Task::new(Uuid::new_v4(), description, 15.0, Duration::minutes(60));
 
         // then
         let error = result.unwrap_err();

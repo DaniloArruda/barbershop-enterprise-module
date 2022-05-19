@@ -18,3 +18,4 @@ path = "src/enterprise_module/lib.rs"
 [dependencies]
 uuid = {  version = "0.8", features = [ "v4", "serde" ] }
 thiserror = "1.0"
+chrono = "0.4"

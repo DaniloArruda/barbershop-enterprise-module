@@ -7,4 +7,13 @@ pub enum DomainError {
 
     #[error("The description cannot be empty")]
     EmptyDescription,
+
+    #[error("The name cannot be empty")]
+    EmptyName,
+
+    #[error("The email is invalid")]
+    InvalidEmail,
+
+    #[error("The end date cannot be before the start date")]
+    EndDateBeforeStartDate,
 }
