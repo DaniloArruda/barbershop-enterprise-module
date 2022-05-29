@@ -76,3 +76,44 @@ impl KafkaClient {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct FakeHandler {}
+
+    impl Handler for FakeHandler {
+        fn topic(&self) -> String {
+            "fake".to_string()
+        }
+
+        fn handle(&self) -> Result<(), anyhow::Error> {
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn should_init_without_handlers() {
+        // given
+        let kafka_configuration = ClientConfig::new();
+        let kafka_client = KafkaClient::new(kafka_configuration);
+
+        // then
+        assert_eq!(0, kafka_client.handlers.len());
+    }
+
+    #[test]
+    fn should_add_handlers_vector_when_attach() {
+        // given
+        let kafka_configuration = ClientConfig::new();
+        let mut kafka_client = KafkaClient::new(kafka_configuration);
+        let handler = FakeHandler {};
+
+        // when
+        kafka_client.attach(Box::new(handler));
+
+        // then
+        assert_eq!(1, kafka_client.handlers.len());
+    }
+}
