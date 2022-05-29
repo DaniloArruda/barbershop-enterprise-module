@@ -1,0 +1,5 @@
+kafka_bootstrap_servers = "localhost:9092"
+kafka_group_id = "barbershop-enterprise-module"
+appointment_solicited_topic_name = "appointment.solicited"
+appointment_confirmed_topic_name = "appointment.confirmed"
+
