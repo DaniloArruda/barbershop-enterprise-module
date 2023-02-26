@@ -6,11 +6,11 @@ use rdkafka::{
     ClientConfig, Message,
 };
 
-use super::handler::Handler;
+use super::handler::{Handler, HandlerWrapper};
 
 pub struct KafkaClient {
     kafka_configuration: ClientConfig,
-    handlers: Vec<Box<dyn Handler>>,
+    handlers: Vec<Box<dyn Handler<Message = String>>>,
 }
 
 impl KafkaClient {
@@ -21,10 +21,14 @@ impl KafkaClient {
         }
     }
 
-    pub fn attach(&mut self, handler: Box<dyn Handler>) -> &mut Self {
-        self.handlers.push(handler);
+    pub fn attach<H: Handler + 'static>(mut self, handler: Box<H>) -> KafkaClient {
+        self.handlers
+            .push(Box::new(HandlerWrapper { inner: handler }));
 
-        self
+        Self {
+            handlers: self.handlers,
+            ..self
+        }
     }
 
     pub async fn consume(&self) {
@@ -39,7 +43,7 @@ impl KafkaClient {
     }
 
     #[allow(unused_must_use)]
-    async fn subscribe_handler(&self, handler: &Box<dyn Handler>) {
+    async fn subscribe_handler(&self, handler: &Box<dyn Handler<Message = String>>) {
         let consumer: StreamConsumer = self.kafka_configuration.create().unwrap();
 
         let topic = handler.topic();
@@ -66,8 +70,10 @@ impl KafkaClient {
                             ""
                         }
                     };
-                    println!("key: '{:?}', payload: '{}', topic: {}, partition: {}, offset: {}, timestamp: {:?}",
-                        borrowed_message.key(), payload, borrowed_message.topic(), borrowed_message.partition(), borrowed_message.offset(), borrowed_message.timestamp());
+                    println!("key: '{:?}', topic: {}, partition: {}, offset: {}, timestamp: {:?}, payload: '{}'",
+                        borrowed_message.key(), borrowed_message.topic(), borrowed_message.partition(), borrowed_message.offset(), borrowed_message.timestamp(), payload);
+
+                    handler.handle(payload.to_string());
 
                     consumer
                         .commit_message(&borrowed_message, CommitMode::Async)
@@ -84,11 +90,13 @@ mod tests {
     struct FakeHandler {}
 
     impl Handler for FakeHandler {
+        type Message = String;
+
         fn topic(&self) -> String {
             "fake".to_string()
         }
 
-        fn handle(&self) -> Result<(), anyhow::Error> {
+        fn handle(&self, _message: Self::Message) -> Result<(), anyhow::Error> {
             Ok(())
         }
     }
@@ -111,7 +119,7 @@ mod tests {
         let handler = FakeHandler {};
 
         // when
-        kafka_client.attach(Box::new(handler));
+        kafka_client = kafka_client.attach(Box::new(handler));
 
         // then
         assert_eq!(1, kafka_client.handlers.len());
