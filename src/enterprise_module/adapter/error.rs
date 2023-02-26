@@ -8,7 +8,7 @@ pub enum AdapterError {
 }
 
 impl AdapterError {
-    pub fn from_serde_error(serde_error: Error) -> AdapterError {
+    pub fn from_serde_error(_serde_error: Error) -> AdapterError {
         AdapterError::Parse
     }
 }
