@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-#[derive(Debug, Error, PartialEq)]
+#[derive(Debug, Error, PartialEq, Clone)]
 pub enum DomainError {
     #[error("The price cannot be negative")]
     NegativeTaskPrice,
@@ -16,4 +16,7 @@ pub enum DomainError {
 
     #[error("The end date cannot be before the start date")]
     EndDateBeforeStartDate,
+
+    #[error("Failed to produce message")]
+    ProducerError,
 }
