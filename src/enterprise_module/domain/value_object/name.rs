@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use crate::domain::error::DomainError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Name {
     first: String,
     last: String,

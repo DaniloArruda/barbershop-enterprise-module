@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use crate::domain::error::DomainError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Email {
     content: String,
 }

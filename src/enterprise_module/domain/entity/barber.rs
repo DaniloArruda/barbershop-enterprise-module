@@ -2,7 +2,7 @@ use uuid::Uuid;
 
 use crate::domain::value_object::{email::Email, name::Name};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Barber {
     pub id: Uuid,
     pub name: Name,

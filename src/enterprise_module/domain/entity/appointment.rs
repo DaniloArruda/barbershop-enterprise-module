@@ -5,14 +5,14 @@ use crate::domain::error::DomainError;
 
 use super::{barber::Barber, client::Client, task::Task};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Appointment {
-    pub id: Uuid,
-    pub start_at: DateTime<Utc>,
-    pub end_at: DateTime<Utc>,
-    pub client: Client,
-    pub barber: Barber,
-    pub task: Task,
+    pub(crate) id: Uuid,
+    start_at: DateTime<Utc>,
+    end_at: DateTime<Utc>,
+    client: Client,
+    barber: Barber,
+    task: Task,
 }
 
 impl Appointment {

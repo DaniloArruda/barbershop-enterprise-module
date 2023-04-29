@@ -3,7 +3,7 @@ use uuid::Uuid;
 
 use crate::domain::error::DomainError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Task {
     pub id: Uuid,
     pub description: String,
