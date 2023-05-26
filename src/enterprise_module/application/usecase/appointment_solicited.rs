@@ -1,5 +1,3 @@
-use uuid::Uuid;
-
 use crate::{
     application::{
         error::ApplicationError,
@@ -81,25 +79,18 @@ impl UseCase<AppointmentSolicitedRequest, Result<(), ApplicationError>>
         let client = client_option.unwrap();
         let task = task_option.unwrap();
 
-        Appointment::new(
-            Uuid::new_v4(),
-            message.start_at,
-            message.end_at,
-            client,
-            barber,
-            task,
-        )
-        .map_err(|error| ApplicationError::Domain(error))
-        .and_then(|appointment| {
-            self.appointment_repository
-                .create(appointment.clone())
-                .and_then(|_| {
-                    self.appointment_created_producer
-                        .produce(AppointmentCreatedEvent {
-                            appointment_id: appointment.id,
-                        })
-                })
-        })
+        Appointment::new(message.start_at, message.end_at, client, barber, task)
+            .map_err(|error| ApplicationError::Domain(error))
+            .and_then(|appointment| {
+                self.appointment_repository
+                    .create(appointment.clone())
+                    .and_then(|_| {
+                        self.appointment_created_producer
+                            .produce(AppointmentCreatedEvent {
+                                appointment_id: appointment.id,
+                            })
+                    })
+            })
     }
 }
 

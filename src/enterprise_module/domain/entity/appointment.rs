@@ -17,7 +17,6 @@ pub struct Appointment {
 
 impl Appointment {
     pub fn new(
-        id: Uuid,
         start_at: DateTime<Utc>,
         end_at: DateTime<Utc>,
         client: Client,
@@ -29,7 +28,7 @@ impl Appointment {
         }
 
         Ok(Appointment {
-            id,
+            id: Uuid::new_v4(),
             start_at,
             end_at,
             client,
@@ -78,7 +77,7 @@ mod tests {
         .unwrap();
 
         // when
-        let result = Appointment::new(Uuid::new_v4(), start_at, end_at, client, barber, task);
+        let result = Appointment::new(start_at, end_at, client, barber, task);
 
         // then
         let error = result.unwrap_err();
