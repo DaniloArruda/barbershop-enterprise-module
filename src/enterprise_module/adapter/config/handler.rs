@@ -8,7 +8,7 @@ pub trait Handler {
 }
 
 pub struct HandlerWrapper<T> {
-    pub(crate) inner: Box<dyn Handler<Message = T>>,
+    pub(crate) inner: Box<dyn Handler<Message = T> + Send + Sync>,
 }
 
 impl<T: std::fmt::Debug + for<'de> serde::Deserialize<'de>> Handler for HandlerWrapper<T> {

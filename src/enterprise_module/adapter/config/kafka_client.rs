@@ -10,7 +10,7 @@ use super::handler::{Handler, HandlerWrapper};
 
 pub struct KafkaClient {
     kafka_configuration: ClientConfig,
-    handlers: Vec<Box<dyn Handler<Message = String>>>,
+    handlers: Vec<Box<dyn Handler<Message = String> + Send + Sync>>,
 }
 
 impl KafkaClient {
@@ -21,7 +21,7 @@ impl KafkaClient {
         }
     }
 
-    pub fn attach<H: Handler + 'static>(mut self, handler: Box<H>) -> KafkaClient {
+    pub fn attach<H: Handler + Send + Sync + 'static>(mut self, handler: Box<H>) -> KafkaClient {
         self.handlers
             .push(Box::new(HandlerWrapper { inner: handler }));
 
@@ -32,7 +32,7 @@ impl KafkaClient {
     }
 
     pub async fn consume(&self) {
-        let mut futures: Vec<Pin<Box<dyn Future<Output = ()>>>> = Vec::new();
+        let mut futures: Vec<Pin<Box<dyn Future<Output = ()> + Send + Sync>>> = Vec::new();
         println!("will consume");
 
         self.handlers.iter().for_each(|handler| {
@@ -43,7 +43,7 @@ impl KafkaClient {
     }
 
     #[allow(unused_must_use)]
-    async fn subscribe_handler(&self, handler: &Box<dyn Handler<Message = String>>) {
+    async fn subscribe_handler(&self, handler: &Box<dyn Handler<Message = String> + Send + Sync>) {
         let consumer: StreamConsumer = self.kafka_configuration.create().unwrap();
 
         let topic = handler.topic();
