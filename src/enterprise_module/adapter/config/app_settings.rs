@@ -16,10 +16,10 @@ pub struct AppSettings {
 impl Default for AppSettings {
     fn default() -> Self {
         Self {
-            kafka_bootstrap_servers: "wrong".to_string(),
-            kafka_group_id: "wrong".to_string(),
-            appointment_solicited_topic_name: "doidera".to_string(),
-            appointment_confirmed_topic_name: "doidera-confirmada".to_string(),
+            kafka_bootstrap_servers: String::default(),
+            kafka_group_id: String::default(),
+            appointment_solicited_topic_name: String::default(),
+            appointment_confirmed_topic_name: String::default(),
         }
     }
 }
