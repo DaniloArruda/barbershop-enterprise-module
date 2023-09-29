@@ -10,7 +10,7 @@ do
                           --topic=${topic} \
                           --bootstrap-server=kafka:29092 \
                           --create"
-    docker-compose exec kafka bash -c "${command}"
+    docker compose exec kafka bash -c "${command}"
 done
 
 # schemas="local_development/bin/kafka/schemas_local"

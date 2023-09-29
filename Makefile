@@ -12,10 +12,10 @@ help: ## Show this help
 load-local-environment: load-docker-compose setup-kafka ## Create the local environment and add all required configurations
 
 unload-local-environment:## Destroy environment
-	docker-compose down
+	docker compose down
 
 load-docker-compose: ## Run docker-compose up -d
-	docker-compose up -d
+	docker compose up -d
 
 setup-kafka: ## Create kafka topics
 	./local_development/kafka/setup-kafka.sh
