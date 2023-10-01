@@ -33,7 +33,7 @@ impl KafkaClient {
 
     pub async fn consume(&self) {
         let mut futures: Vec<Pin<Box<dyn Future<Output = ()> + Send + Sync>>> = Vec::new();
-        println!("will consume");
+        println!("[kafka-client] will consume");
 
         self.handlers.iter().for_each(|handler| {
             futures.push(Box::pin(self.subscribe_handler(handler)));
@@ -48,17 +48,17 @@ impl KafkaClient {
 
         let topic = handler.topic();
 
-        println!("will subscribe");
+        println!("[kafka-client] will subscribe");
 
         consumer
             .subscribe(&vec![topic.as_str()])
-            .expect("Can't subscribe to specified topics");
+            .expect("[kafka-client] Can't subscribe to specified topics");
 
         loop {
             consumer.recv()
                 .await
                 .map_err(|error| {
-                    println!("Kafka error: {}", error);
+                    println!("[kafka-client] Kafka error: {}", error);
                     error
                 })
                 .map(|borrowed_message| {
@@ -66,14 +66,16 @@ impl KafkaClient {
                         None => "",
                         Some(Ok(s)) => s,
                         Some(Err(e)) => {
-                            println!("Error while deserializing message payload: {:?}", e);
+                            println!("[kafka-client] Error while deserializing message payload: {:?}", e);
                             ""
                         }
                     };
-                    println!("key: '{:?}', topic: {}, partition: {}, offset: {}, timestamp: {:?}, payload: '{}'",
+                    println!("[kafka-client] key: '{:?}', topic: {}, partition: {}, offset: {}, timestamp: {:?}, payload: '{}'",
                         borrowed_message.key(), borrowed_message.topic(), borrowed_message.partition(), borrowed_message.offset(), borrowed_message.timestamp(), payload);
 
-                    handler.handle(payload.to_string());
+                    handler.handle(payload.to_string())
+                        .inspect_err(|error| println!("[kafka-client] error: {}", error))
+                        .inspect(|_| println!("[kafka-client] message consumed successfully"));
 
                     consumer
                         .commit_message(&borrowed_message, CommitMode::Async)

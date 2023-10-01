@@ -23,13 +23,13 @@ use crate::{
 use super::usecase::UseCase;
 
 pub struct AppointmentSolicitedUseCase {
-    pub barber_repository: Box<dyn BarberRepository>,
-    pub client_repository: Box<dyn ClientRepository>,
-    pub task_repository: Box<dyn TaskRepository>,
-    pub appointment_repository: Box<dyn AppointmentRepository>,
+    pub barber_repository: Box<dyn BarberRepository + Send + Sync>,
+    pub client_repository: Box<dyn ClientRepository + Send + Sync>,
+    pub task_repository: Box<dyn TaskRepository + Send + Sync>,
+    pub appointment_repository: Box<dyn AppointmentRepository + Send + Sync>,
 
-    pub appointment_rejected_producer: Box<dyn AppointmentRejectedProducer>,
-    pub appointment_created_producer: Box<dyn AppointmentCreatedProducer>,
+    pub appointment_rejected_producer: Box<dyn AppointmentRejectedProducer + Send + Sync>,
+    pub appointment_created_producer: Box<dyn AppointmentCreatedProducer + Send + Sync>,
 }
 
 impl UseCase<AppointmentSolicitedRequest, Result<(), ApplicationError>>

@@ -10,6 +10,6 @@ pub enum ApplicationError {
     #[error("Error to produce a message")]
     ProducerError,
 
-    #[error("Cause: {0}")]
+    #[error("DomainError: {0}")]
     Domain(DomainError),
 }
