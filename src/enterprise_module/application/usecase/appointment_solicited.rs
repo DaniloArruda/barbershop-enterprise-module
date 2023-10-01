@@ -43,6 +43,7 @@ impl UseCase<AppointmentSolicitedRequest, Result<(), ApplicationError>>
                 .appointment_rejected_producer
                 .produce(AppointmentRejectedEvent {
                     appointment_id: message.id,
+                    message: "Barber not found".to_string(),
                 });
         }
 
@@ -55,6 +56,7 @@ impl UseCase<AppointmentSolicitedRequest, Result<(), ApplicationError>>
                 .appointment_rejected_producer
                 .produce(AppointmentRejectedEvent {
                     appointment_id: message.id,
+                    message: "Client not found".to_string(),
                 });
         }
 
@@ -65,6 +67,7 @@ impl UseCase<AppointmentSolicitedRequest, Result<(), ApplicationError>>
                 .appointment_rejected_producer
                 .produce(AppointmentRejectedEvent {
                     appointment_id: message.id,
+                    message: "Task not found".to_string(),
                 });
         }
 
@@ -73,6 +76,7 @@ impl UseCase<AppointmentSolicitedRequest, Result<(), ApplicationError>>
                 .appointment_rejected_producer
                 .produce(AppointmentRejectedEvent {
                     appointment_id: message.id,
+                    message: "Barber is busy".to_string(),
                 });
         }
 
