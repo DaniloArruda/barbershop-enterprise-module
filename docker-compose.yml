@@ -1,6 +1,20 @@
 version: "3"
 
 services:
+  # barbarshop-enterprise-module:
+  #   container_name: barbarshop-enterprise-module
+  #   image: daniloarruda/barbarshop-enterprise-module:1.0.0
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+  #   ports:
+  #     - '8080:8080'
+  #   depends_on:
+  #     - postgres
+  #     - schema-registry
+
   kafka:
     image: confluentinc/cp-server:6.1.0
     restart: always
@@ -41,3 +55,18 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+
+  postgres:
+    container_name: postgres
+    image: 'postgres:12'
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}

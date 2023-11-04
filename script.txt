@@ -1,0 +1,2 @@
+sudo apt install build-essential libssl-dev
+sudo apt install cmake

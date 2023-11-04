@@ -11,6 +11,7 @@ pub struct AppSettings {
     pub kafka_group_id: String,
     pub appointment_solicited_topic_name: String,
     pub appointment_confirmed_topic_name: String,
+    pub database_url: String,
 }
 
 impl Default for AppSettings {
@@ -20,6 +21,7 @@ impl Default for AppSettings {
             kafka_group_id: String::default(),
             appointment_solicited_topic_name: String::default(),
             appointment_confirmed_topic_name: String::default(),
+            database_url: String::default(),
         }
     }
 }

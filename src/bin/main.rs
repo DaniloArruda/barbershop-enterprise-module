@@ -1,9 +1,11 @@
+use std::thread;
+
 use anyhow::Result;
 
 use enterprise_module_lib::adapter::config::app_settings::AppSettings;
 use tokio::task::JoinError;
 
-use crate::runnable::kafka_consumer::KafkaConsumer;
+use crate::runnable::{kafka_consumer::KafkaConsumer, postgres_database::PostgresDatabase};
 
 pub mod runnable;
 
@@ -12,6 +14,11 @@ async fn main() -> Result<()> {
     let app_settings = AppSettings::new().unwrap();
 
     let kafka_consumer = KafkaConsumer::new(&app_settings);
+    let postgres = PostgresDatabase::new(&app_settings);
+
+    thread::spawn(move || postgres.start().unwrap())
+        .join()
+        .expect("Thread panicked");
 
     let kafka_consumer_task = tokio::spawn(kafka_consumer.start());
     println!("Kafka consumer started");
