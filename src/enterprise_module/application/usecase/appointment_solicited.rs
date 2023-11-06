@@ -12,7 +12,7 @@ use crate::{
         request::appointment_solicited_request::AppointmentSolicitedRequest,
     },
     domain::{
-        entity::appointment::Appointment,
+        entity::appointment::{Appointment, AppointmentStatus},
         event::{
             appointment_created_event::AppointmentCreatedEvent,
             appointment_rejected_event::AppointmentRejectedEvent,
@@ -83,18 +83,25 @@ impl UseCase<AppointmentSolicitedRequest, Result<(), ApplicationError>>
         let client = client_option.unwrap();
         let task = task_option.unwrap();
 
-        Appointment::new(message.start_at, message.end_at, client, barber, task)
-            .map_err(|error| ApplicationError::Domain(error))
-            .and_then(|appointment| {
-                self.appointment_repository
-                    .create(appointment.clone())
-                    .and_then(|_| {
-                        self.appointment_created_producer
-                            .produce(AppointmentCreatedEvent {
-                                appointment_id: appointment.id,
-                            })
-                    })
-            })
+        Appointment::new(
+            message.start_at,
+            message.end_at,
+            client,
+            barber,
+            task,
+            AppointmentStatus::Solicited,
+        )
+        .map_err(|error| ApplicationError::Domain(error))
+        .and_then(|appointment| {
+            self.appointment_repository
+                .create(appointment.clone())
+                .and_then(|_| {
+                    self.appointment_created_producer
+                        .produce(AppointmentCreatedEvent {
+                            appointment_id: appointment.id,
+                        })
+                })
+        })
     }
 }
 
@@ -305,6 +312,7 @@ mod tests {
         task_repository.expect_find_by_id().return_const(task());
         appointment_repository
             .expect_create()
+            .withf(|appointment| appointment.status == AppointmentStatus::Solicited)
             .once()
             .return_const(Ok(()));
 

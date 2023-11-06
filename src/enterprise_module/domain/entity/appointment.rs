@@ -7,12 +7,13 @@ use super::{barber::Barber, client::Client, task::Task};
 
 #[derive(Debug, Clone)]
 pub struct Appointment {
-    pub(crate) id: Uuid,
-    start_at: DateTime<Utc>,
-    end_at: DateTime<Utc>,
-    client: Client,
-    barber: Barber,
-    task: Task,
+    pub id: Uuid,
+    pub start_at: DateTime<Utc>,
+    pub end_at: DateTime<Utc>,
+    pub client: Client,
+    pub barber: Barber,
+    pub task: Task,
+    pub status: AppointmentStatus,
 }
 
 impl Appointment {
@@ -22,6 +23,7 @@ impl Appointment {
         client: Client,
         barber: Barber,
         task: Task,
+        status: AppointmentStatus,
     ) -> Result<Appointment, DomainError> {
         if end_at < start_at {
             return Err(DomainError::EndDateBeforeStartDate);
@@ -34,8 +36,18 @@ impl Appointment {
             client,
             barber,
             task,
+            status,
         })
     }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum AppointmentStatus {
+    Solicited,
+    Confirmed,
+    InProgress,
+    Finished,
+    NoExecuted,
 }
 
 #[cfg(test)]
@@ -77,7 +89,14 @@ mod tests {
         .unwrap();
 
         // when
-        let result = Appointment::new(start_at, end_at, client, barber, task);
+        let result = Appointment::new(
+            start_at,
+            end_at,
+            client,
+            barber,
+            task,
+            AppointmentStatus::Solicited,
+        );
 
         // then
         let error = result.unwrap_err();
